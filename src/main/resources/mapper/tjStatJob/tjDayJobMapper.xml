@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chanct.statDayMapper">
+<!-- 统计城市人数天开始 -->
+<select id="getCheatedUserCity" resultType="com.chanct.tjStat.entity.CheatedUserCityVo"
+	parameterType="java.util.Map">
+		select p.city as city,sum(p.lightCount) as lightCount,sum(p.deepCount) as deepCount,
+		#{endTime} as createTime,#{jobTime} as jobTime,sum(lightCount+deepCount) as totalCount,1 as dataSource from (
+		SELECT
+	    t.user_city as city,
+		CASE WHEN evilType = 1 THEN 1 ELSE 0 END AS lightCount,
+		CASE WHEN evilType = 2 THEN 1 ELSE 0 END AS deepCount
+		FROM evil_detail_info t
+	<include refid="whereConditions" />
+		) p group by p.city
+</select>
+<insert id="insertCheatedUserCity" parameterType="List" >  
+       insert into  s_call_cheatedusercity_dcnt
+       (city,lightcount,deepcount,totalcount,createtime,jobtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.city},#{item.lightCount},#{item.deepCount},
+           #{item.totalCount},#{item.createTime},#{item.jobTime},#{item.dataSource})
+       </foreach>
+</insert>
+<!-- 统计城市人数天结束 -->
+<!-- 统计各运营商人数天开始 -->
+<select id="getCallIspDayCount" resultType="com.chanct.tjStat.entity.CallIspVo"
+	parameterType="java.util.Map">
+		select  evil_number_isp as isp,count(1) as evilCallCount, #{endTime} as createTime,#{jobTime} as jobTime,1 as dataSource
+		from evil_detail_info t
+	<include refid="whereConditions" />
+	  group by t.evil_number_isp
+</select>
+<insert id="insertCallIspDayCount" parameterType="List" >  
+       insert into  s_call_isp_dcnt
+       (isp,evilcallcount,createtime,jobtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.isp},#{item.evilCallCount},#{item.createTime},#{item.jobTime},#{item.dataSource})
+       </foreach>
+</insert>
+<!-- 统计城市人数天结束 -->
+<!-- 统计各诈骗类型人数天开始 -->
+<select id="gettCheatedTypeDayCount" resultType="com.chanct.tjStat.entity.CheatedTypeCountVo"
+	parameterType="java.util.Map">
+		select cheatedType as cheatedType ,sum(p.lightCount) as lightCount,sum(p.deepCount) as deepCount,
+		sum(lightCount+deepCount) as ctCnt,#{endTime} as createTime,#{jobTime} as jobTime,1 as dataSource from (
+		SELECT
+		cheated_type as cheatedType,
+		CASE WHEN evilType = 1 THEN 1 ELSE 0 END AS lightCount,
+		CASE WHEN evilType = 2 THEN 1 ELSE 0 END AS deepCount
+		FROM evil_detail_info t
+	<include refid="whereConditions" />
+		) p group by p.cheatedType
+</select>
+<insert id="inserttCheatedTypeDayCount" parameterType="List" >  
+       insert into  s_call_cheatedtype_dcnt
+       (cheatedtype,lightcount,deepcount,ctcnt,createtime,jobtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.cheatedType},#{item.lightCount},#{item.deepCount},#{item.ctCnt},#{item.createTime},#{item.jobTime},#{item.dataSource})
+       </foreach>
+</insert>
+<!-- 统计城市人数天结束 -->
+ <sql id="whereConditions">
+		<where>
+			<trim prefixOverrides="and" suffixOverrides="and">
+				1=1
+				
+				<if test=" startTime !='' and startTime != null and endTime !='' and endTime != null">
+					and  date_format(t.engine_time,'%Y-%m-%d %H:%i:%s')  between str_to_date(#{startTime},'%Y-%m-%d %H:%i:%s') 
+					and str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+				</if>
+				<if test="startTime !='' and startTime != null and (endTime =='' or endTime == null)">
+					and date_format(t.engine_time,'%Y-%m-%d %H:%i:%s') &gt;= str_to_date(#{startTime},'%Y-%m-%d %H:%i:%s')
+				</if>
+				<if test="(startTime =='' or startTime == null) and endTime !='' and endTime != null">
+					and date_format(t.engine_time,'%Y-%m-%d %H:%i:%s') &lt;= str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+				</if>
+			</trim>
+		</where>
+	</sql>
+</mapper>

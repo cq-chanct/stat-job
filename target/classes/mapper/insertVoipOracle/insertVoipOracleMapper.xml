@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="insertVoip.insertVoipOracleMapper">
+	
+	<select id="getVoipByTime" resultType="com.chanct.insertVoipOracle.entity.ECdrVo">
+		SELECT callertogatewaye164 as callertogatewaye164,calleetogatewaye164 as calleetogatewaye164,holdtime as holdtime,starttime as starttime,stoptime as stoptime,callerlocaltion as callerlocaltion,calleelocaltion as calleelocaltion FROM e_cdr  WHERE time>(SELECT SUBDATE(NOW() ,INTERVAL 1 hour))
+	</select>
+</mapper>

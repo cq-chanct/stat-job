@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maliceUrl.maliceUrlInterface">
+
+    <select id="queryMaliceUrlInterface" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT ticketid FROM `fw_url_interface` WHERE 1=1
+        <if test="_parameter != null">
+            AND ticketid = ${_parameter}
+        </if>
+
+    </select>
+
+    <delete id="deleteMaliceUrl" parameterType="java.lang.String">
+        DELETE FROM fw_url_interface WHERE 1=1
+        <if test="_parameter != null">
+            AND ticketid = ${_parameter}
+        </if>
+    </delete>
+
+
+    <insert id="insertMaliceInterface" parameterType="List">
+        INSERT INTO fw_url_interface(
+        ticketid,NAME,phone,belongPlaceCode,belongPlace,url,ip,image,depth,operator,visisPV,firstTime,lastTime,isStop,stopTime,typeThree,isPolice,md5
+        )VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.ticketId,jdbcType=VARCHAR},#{item.name},#{item.phone},#{item.belongPlaceCode},#{item.belongPlace},#{item.url},#{item.ip},#{item.image},#{item.depth},#{item.operator},#{item.visisPV},#{item.firstTime},
+            #{item.lastTime},#{item.isStop},#{item.stopTime},#{item.typeThree},#{item.isPolice},#{item.md5}
+            )
+        </foreach>
+    </insert>
+    <insert id="insertObjectAdress" parameterType="List">
+        insert into UCMD_TGJ_URL_INTERFACE
+        (
+        TICKETID,URL,YYS,RDSJ,FL
+        )
+        <foreach collection="list" item="item" index="index" separator="UNION">
+            SELECT
+            #{item.id,jdbcType=VARCHAR},
+            #{item.url,jdbcType=VARCHAR},
+            #{item.operator},
+            to_date(substr(#{item.findTime},1,19),'YYYY-MM-DD HH24:MI:SS'),
+            #{item.coding}
+            FROM dual
+        </foreach>
+    </insert>
+    <insert id="insertObjectUrl" parameterType="List">
+        insert into UCMD_TGJ_FWURL_INTERFACE
+        (
+        TICKETID,URL,YYS,SCFWSJ,SFGASJ
+        )
+        <foreach collection="list" item="item" index="index" separator="UNION">
+            SELECT
+            #{item.id},
+            #{item.url,jdbcType=VARCHAR},
+            #{item.operator},
+            to_date(substr(#{item.findTime},1,19),'YYYY-MM-DD HH24:MI:SS'),
+            1
+            FROM dual
+        </foreach>
+    </insert>
+
+
+
+
+
+    <select id="queryUrlResult" resultType="com.chanct.maliceUrl.entity.maliceUrlResult">
+
+        SELECT ticketId,result,remark,isreported,TYPE,subtype,stopLoss,createddispLayName ,idCard,amount,dissuade,frozen,unitName,feedBackPerson,feedBackTime,replies FROM UCMD_TGJ_FWURL_RESULT
+where cjsj > sysdate-1.2/24
+    </select>
+    <insert id="insertUrlMysqlReslut" parameterType="List">
+        INSERT INTO fw_url_result (
+            ticketId,
+            result,
+            remark,
+            isreported,
+            TYPE,
+            subtype,
+            stopLoss,
+            createddispLayName,
+            idCard,
+            amount,
+            dissuade,
+            frozen,
+            unitName,
+            feedBackPerson,
+            feedBackTime,
+            replies
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.ticketId},
+            #{item.result},
+            #{item.remark},
+            #{item.isreported},
+            #{item.TYPE},
+            #{item.subtype},
+            #{item.stopLoss},
+            #{item.createddispLayName},
+            #{item.idCard},
+            #{item.amount},
+            #{item.dissuade},
+            #{item.frozen},
+            #{item.unitName},
+            #{item.feedBackPerson},
+            #{item.feedBackTime},
+            #{item.replies}
+            )
+        </foreach>
+
+    </insert>
+
+    <insert id="insertUrlMysqlUrl" parameterType="List">
+        INSERT INTO url_interface (
+        ticketId,
+        url,
+        ip,
+        depth,
+        operator,
+        rdTime,
+        typeThree
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.ticketId},
+            #{item.url},
+            #{item.ip},
+            #{item.depth},
+            #{item.operator},
+            #{item.rdTime},
+            #{item.typeThree}
+            )
+        </foreach>
+
+    </insert>
+
+    <select id="queryMaliceUrl" resultType="com.chanct.maliceUrl.entity.maliceUrl">
+        SELECT
+           id,find_time as findTime,url, coding,operator
+        FROM t_ypl_real_black_url
+        WHERE other ='' AND  coding &gt;= 300000 AND coding &lt;= 310000;
+    </select>
+
+    <update id="updateMailceUrl" >
+        UPDATE t_ypl_real_black_url set other = "已推送公安"   where other ='' AND  coding &gt;= 300000 AND coding &lt;= 310000;
+
+    </update>
+
+    <!--公安下发黑名单,管局接收后修改状态-->
+
+    <select id="queryUrl2TGJ" resultType="com.chanct.maliceUrl.entity.UrlIntercept">
+
+       select id,url,cjdwmc as companyName,cjrxm as contacts,cjsj as time, state,cjrlxdh as contactsPhone,
+       salx as type
+       from UCMD_URL2TGJ_INTERFACE t
+       where  state = 1
+    </select>
+
+    <update id="updateUrl2TGJ">
+        update UCMD_URL2TGJ_INTERFACE set state = 2 where state = 1
+    </update>
+
+    <insert id="insertUrlInterface" parameterType="List">
+        INSERT INTO t_url_intercept (
+        url_id,
+        url,
+        type,
+        check_time,
+        contacts,
+        department,
+        phone,
+        disposal_time,
+        data_source,
+        state,
+        swindle,
+        createTime,
+        examineState,
+        examineTime,
+        examineName
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id},
+            #{item.url},
+            #{item.type},
+            #{item.time},
+            #{item.contacts},
+            #{item.companyName},
+            #{item.contactsPhone},
+            60,
+            1,
+            1,
+            1,
+            NOW(),
+            0,
+            NOW(),
+            ''
+            )
+        </foreach>
+
+    </insert>
+    <!--  猫池，收码平台监测数据推送公安-->
+    <select id="queryMcDetial" resultType="com.chanct.maliceUrl.entity.McDetail">
+
+          SELECT  msisdn,phcnt,callingnum,callingcount,callednum,calledcount,
+                sendnum,sendcount,receivenum,receivecount,callingnum_p2p AS callingnumPP,callednum_p2p AS callednumpp,
+                sendnum_p2p AS sendnumpp,receivenum_p2p AS receivenumpp,callingnum_sp AS callingnumsp,callednum_sp AS callednumsp,sendnum_sp AS sendnum_sp,
+                receivenum_sp  AS receivenumsp,
+                communicatecount,ulicnt,alluli,106COUNT AS COUNT,c_imsi as imsi,c_imei as imei,areacode,homecode,date_format(checktime,'%Y-%m-%d %H:%i:%s') as checktime,
+                areaprov,areacity,homeprov,homecity,mctype,isptype
+           FROM `s_mc_detail` where status = 0 and createtime >= '2018-08-28 00:00:00' limit 2000
+    </select>
+
+    <update id="updateMcDetail">
+        update s_mc_detail set status = 1 where status = 0 and createtime >= '2018-08-28 00:00:00' limit 2000
+    </update>
+
+
+    <insert id="insertMcDetail" parameterType="List">
+        insert into UCMD_TGJ_MCDETAIL (
+        msisdn,phcnt,callingnum,callingcount,callednum,calledcount,
+        sendnum,sendcount,receivenum,receivecount,callingnum_p2p,callednum_p2p,
+        sendnum_p2p,receivenum_p2p,callingnum_sp,callednum_sp,
+        communicatecount,ulicnt,alluli, COUNT,c_imsi,c_imei,areacode,homecode,checktime,
+        areaprov,areacity,homeprov,homecity,mctype,isptype
+        )
+        <foreach collection="list" item="item" index="index" separator="UNION">
+            SELECT
+            #{item.msisdn,jdbcType=VARCHAR},#{item.phcnt,jdbcType=NUMERIC},#{item.callingnum,jdbcType=NUMERIC},
+            #{item.callingcount,jdbcType=NUMERIC},#{item.callednum,jdbcType=NUMERIC},#{item.calledcount,jdbcType=NUMERIC},
+            #{item.sendnum,jdbcType=NUMERIC},#{item.sendcount,jdbcType=NUMERIC},#{item.receivenum,jdbcType=NUMERIC},
+            #{item.receivecount,jdbcType=NUMERIC},#{item.callingnumpp,jdbcType=NUMERIC},#{item.callednumpp,jdbcType=NUMERIC},
+            #{item.sendnumpp,jdbcType=NUMERIC},#{item.receivenumpp,jdbcType=NUMERIC},#{item.callingnumsp,jdbcType=NUMERIC},
+            #{item.callednumsp,jdbcType=NUMERIC},
+            #{item.communicatecount,jdbcType=NUMERIC},#{item.ulicnt,jdbcType=NUMERIC},#{item.alluli,jdbcType=VARCHAR},
+            #{item.COUNT,jdbcType=NUMERIC},#{item.imsi,jdbcType=NUMERIC},#{item.imei,jdbcType=NUMERIC},#{item.areacode,jdbcType=NUMERIC},
+            #{item.homecode,jdbcType=NUMERIC},to_date(#{item.checktime},'YYYY-MM-DD HH24:MI:SS'),
+            #{item.areaprov,jdbcType=VARCHAR},#{item.areacity,jdbcType=VARCHAR},#{item.homeprov,jdbcType=VARCHAR},
+            #{item.homecity,jdbcType=VARCHAR},#{item.mctype,jdbcType=VARCHAR},#{item.isptype,jdbcType=VARCHAR} FROM dual
+
+        </foreach>
+
+    </insert>
+
+</mapper>

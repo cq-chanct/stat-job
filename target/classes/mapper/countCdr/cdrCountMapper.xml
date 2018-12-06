@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="count.cdrCountMapper">
+
+	<insert id="insertEvil" parameterType="List">
+		insert into evil_detail_info
+		(
+		stat_date,
+		cheated_user,user_country,user_prov,user_city,user_isp,
+		evil_number,evil_country,evil_prov,evil_city,evil_number_isp,evil_number_type,
+		call_type,answerTime,callDuration,all_times,all_callDuration,
+		cheated_type,engine_time,evilType,cdr_source
+		) 
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(
+		#{item.statDate}, 
+		#{item.cheatedUser}, #{item.userCountry},#{item.userProv},#{item.userCity},#{item.userIsp},
+		#{item.evilNumber},#{item.evilCountry},#{item.evilProv},#{item.evilCity},#{item.evilNumberIsp},#{item.evilNumberType},
+		#{item.callType},#{item.answerTime},#{item.callDuration},#{item.allTimes},#{item.allCallDuration},
+		#{item.cheatedType},#{item.engineTime},#{item.evilType},#{item.cdrSource})
+		</foreach>
+	</insert>
+	
+	<select id="getPhoneArea" resultType="com.chanct.cdrCount.vo.NumBerArea">
+		SELECT
+			phone_num                    	as phoneNum,
+			phone_prov                      AS phoneProv,
+			phone_city                       AS phoneCity
+		FROM common_telphone_area  where 1=1 
+		<if test=" phoneNum !='' and phoneNum != null " >
+		  and phone_num=#{phoneNum}
+	   </if>
+	</select>
+		<select id="getPhoneAreaMobile" resultType="com.chanct.cdrCount.vo.NumBerArea">
+		SELECT
+			phone_num                    	as phoneNum,
+			phone_prov                      AS phoneProv,
+			phone_city                       AS phoneCity
+		FROM common_mobilephone_area  where 1=1 
+		<if test=" phoneNum !='' and phoneNum != null " >
+		  and phone_num=#{phoneNum}
+	   </if>
+	</select>
+	<select id="getIspList" resultType="com.chanct.cdrCount.vo.IspVo">
+		SELECT
+			prefix                    	as preFix,
+			isp_name                      AS ispName
+		FROM common_isp  where 1=1 
+		</select>
+	<select id="getPhoneCountry" resultType="com.chanct.cdrCount.vo.NumBerArea">
+		SELECT
+			area_num                    	as phoneNum,
+			area_name                     AS phoneCountry
+		FROM common_international_num  where 1=1 
+	</select>
+	
+	
+	<select id="getWhiteList" resultType="string">
+	select phone from evil_whitephone
+	</select>
+	
+	
+</mapper>

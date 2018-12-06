@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chanct.statMapper">
+<!-- 统计城市，省份，国家用户人数开始 -->
+<select id="getCheatedAreaUserCount" resultType="com.chanct.tjStat.entity.CheatedUserCountVo"
+	parameterType="java.util.Map">
+		select p.addr as addr,sum(p.lightCount) as lightCount,sum(p.deepCount) as deepCount,sum(allTimes) as allTimes,
+		#{endTime} as createTime,sum(lightCount+deepCount) as totalCount,1 as dataSource from (
+		SELECT
+	   <if test="statArea=='city'">t.user_city as addr,</if>
+       <if test="statArea=='prov'"> t.user_prov as addr,</if>
+       <if test="statArea=='nation'">t.user_country as addr,</if>
+		all_times AS allTimes,
+		CASE WHEN evilType = 1 THEN 1 ELSE 0 END AS lightCount,
+		CASE WHEN evilType = 2 THEN 1 ELSE 0 END AS deepCount
+		FROM evil_detail_info t
+	<include refid="whereConditions" />
+		) p group by p.addr
+</select>
+<insert id="insertCheatedCityUserCount" parameterType="List" >  
+       insert into  s_call_cheatedcityusercount_hcnt
+       (addr,all_times,lightcount,deepcount,totalcount,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.addr},#{item.allTimes},#{item.lightCount},#{item.deepCount},
+           #{item.totalCount},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>
+<insert id="insertCheatedProvUserCount" parameterType="List" >  
+       insert into 
+	   s_call_cheatedprovusercount_hcnt
+       (addr,all_times,lightcount,deepcount,totalcount,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.addr},#{item.allTimes},#{item.lightCount},#{item.deepCount},
+           #{item.totalCount},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>	
+<insert id="insertCheatedNationUserCount" parameterType="List" >  
+       insert into 
+	   s_call_cheatednationusercount_hcnt
+       (addr,all_times,lightcount,deepcount,totalcount,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.addr},#{item.allTimes},#{item.lightCount},#{item.deepCount},
+           #{item.totalCount},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>
+<!-- 统计城市，省份，国家用户人数结束 -->
+<!-- 统计城市，省份，国家各类型人数开始 -->
+<select id="getCheatedTypeUserCount" resultType="com.chanct.tjStat.entity.CheatedTypeCountVo"
+	parameterType="java.util.Map">
+		select p.addr as addr,sum(p.lightCount) as lightCount,sum(p.deepCount) as deepCount, cheatedType as cheatedType,
+		#{endTime} as createTime,sum(lightCount+deepCount) as ctCnt,1 as dataSource from (
+		SELECT
+		cheated_type as cheatedType,
+	   <if test="statArea=='city'">t.user_city as addr,</if>
+       <if test="statArea=='prov'"> t.user_prov as addr,</if>
+       <if test="statArea=='nation'">t.user_country as addr,</if>
+		all_times AS allTimes,
+		CASE WHEN evilType = 1 THEN 1 ELSE 0 END AS lightCount,
+		CASE WHEN evilType = 2 THEN 1 ELSE 0 END AS deepCount
+		FROM evil_detail_info t
+	<include refid="whereConditions" />
+		) p group by p.cheatedType
+</select>
+<insert id="insertCheatedCityTypeCount" parameterType="List" >  
+       insert into  s_call_cheatedtypecity_hcnt
+       (cheatedtype,addr,lightcount,deepcount,ctcnt,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.cheatedType},#{item.addr},#{item.lightCount},#{item.deepCount},
+           #{item.ctCnt},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>
+<insert id="insertCheatedProvTypeCount" parameterType="List" >  
+       insert into 
+	   s_call_cheatedtypeproc_hcnt
+      (cheatedtype,addr,lightcount,deepcount,ctcnt,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.cheatedType},#{item.addr},#{item.lightCount},#{item.deepCount},
+           #{item.ctCnt},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>	
+<insert id="insertCheatedNationTypeCount" parameterType="List" >  
+       insert into 
+	   s_call_cheatedtypenation_hcnt
+      (cheatedtype,addr,lightcount,deepcount,ctcnt,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.cheatedType},#{item.addr},#{item.lightCount},#{item.deepCount},
+          #{item.ctCnt},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>
+
+<!-- 统计城市，省份，国家各类型人数结束 -->
+<!-- 统计城市，省份，国家各类型Top排名 开始-->
+<!-- 统计城市，省份，国家各类型Top排名 结束-->	
+
+<!-- 统计城市，省份，国家 流向开始-->
+<select id="getDynamicFlowVo" resultType="com.chanct.tjStat.entity.DynamicFlowVo"
+	parameterType="java.util.Map">
+		select p.startAddr as startAddr,p.toAddr as toAddr,sum(p.lightCount) as lightCount,sum(p.deepCount) as deepCount,
+		 #{endTime} as createTime,sum(lightCount+deepCount) as totalCount,1 as dataSource from (
+		SELECT
+		cheated_type as cheatedType,
+	   <if test="statArea=='city'">t.evil_city as startAddr,t.user_city as toAddr,</if>
+       <if test="statArea=='prov'"> t.evil_prov AS startAddr,t.user_prov as toAddr,</if>
+       <if test="statArea=='nation'">t.evil_country as startAddr,t.user_country as toAddr,</if>
+		all_times AS allTimes,
+		CASE WHEN evilType = 1 THEN 1 ELSE 0 END AS lightCount,
+		CASE WHEN evilType = 2 THEN 1 ELSE 0 END AS deepCount
+		FROM evil_detail_info t
+	<include refid="whereConditions" />
+	<if test="statArea=='city'">and t.user_prov='福建' and t.evil_prov='福建'</if>
+		) p group by p.startAddr,p.toAddr
+</select>
+<insert id="insertDynamicCityFlowVo" parameterType="List" >  
+       insert into  s_call_dynamicflowcity_hcnt
+       (startaddr,toaddr,lightcount,deepcount,totalcount,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.startAddr},#{item.toAddr},#{item.lightCount},#{item.deepCount},
+           #{item.totalCount},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>
+<insert id="insertDynamicProvFlowVo" parameterType="List" >  
+       insert into 
+	   s_call_dynamicflowproc_hcnt
+     (startaddr,toaddr,lightcount,deepcount,totalcount,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.startAddr},#{item.toAddr},#{item.lightCount},#{item.deepCount},
+           #{item.totalCount},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>	
+<insert id="insertDynamicNationFlowVo" parameterType="List" >  
+       insert into 
+	   s_call_dynamicflownation_hcnt
+      (startaddr,toaddr,lightcount,deepcount,totalcount,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+         (#{item.startAddr},#{item.toAddr},#{item.lightCount},#{item.deepCount},
+           #{item.totalCount},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>
+<!-- 统计城市，省份，国家流向 结束-->	
+
+<!-- 统计每小时开始-->
+<select id="getCallTotalCount" resultType="com.chanct.tjStat.entity.CallTotalCountVo"
+	parameterType="java.util.Map">
+		select if(isnull(sum(p.lightCount)),0,sum(p.lightCount)) as lightCount,if(isnull(sum(p.deepCount)),0,sum(p.deepCount)) as deepCount,
+		if(isnull(sum(lightCount+deepCount)),0,sum(lightCount+deepCount)) as cheatCount,if(isnull(sum(lightCount+deepCount)),0,sum(lightCount+deepCount)) as totalCount,#{endTime} as createTime,1 as dataSource from (
+		SELECT
+		CASE WHEN evilType = 1 THEN 1 ELSE 0 END AS lightCount,
+		CASE WHEN evilType = 2 THEN 1 ELSE 0 END AS deepCount
+		FROM evil_detail_info t
+	<include refid="whereConditions" />
+		) p
+</select>
+<insert id="insertCallTotalCount" parameterType="List" >  
+        insert into  s_call_totalcount_hcnt
+       (lightcount,deepcount,cheatcount,totalcount,createtime,datasource)values
+       <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.lightCount},#{item.deepCount},#{item.cheatCount},#{item.totalCount},#{item.createTime},#{item.dataSource})
+       </foreach>
+</insert>
+<!-- 统计城市，省份，国家流向 结束-->		
+ <sql id="whereConditions">
+		<where>
+			<trim prefixOverrides="and" suffixOverrides="and">
+				1=1
+				
+				<if test=" startTime !='' and startTime != null and endTime !='' and endTime != null">
+					and  date_format(t.engine_time,'%Y-%m-%d %H:%i:%s')  between str_to_date(#{startTime},'%Y-%m-%d %H:%i:%s') 
+					and str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+				</if>
+				<if test="startTime !='' and startTime != null and (endTime =='' or endTime == null)">
+					and date_format(t.engine_time,'%Y-%m-%d %H:%i:%s') &gt;= str_to_date(#{startTime},'%Y-%m-%d %H:%i:%s')
+				</if>
+				<if test="(startTime =='' or startTime == null) and endTime !='' and endTime != null">
+					and date_format(t.engine_time,'%Y-%m-%d %H:%i:%s') &lt;= str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+				</if>
+			</trim>
+		</where>
+	</sql>
+</mapper>

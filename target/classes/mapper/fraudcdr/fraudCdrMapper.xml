@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fraudcdr.fraudCdrMapper">
+
+	<insert id="insertCdr" parameterType="List">
+		insert into s_voice_fraudcdr_detail
+		(
+		frontid,
+		direction,domain,callingnumber,oricallednumber,callednumber,
+		starttime,answertime,keypresstime,answerendtime,endtime,calllength,
+		callduration,calltype,barringtype,trunkid,localcode,
+		destcode,listtype,auditresult,recordpath,recordstarttime,recordendtime,voicename,voiceurl
+		) 
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(
+		#{item.frontid}, 
+		#{item.direction}, #{item.domain},#{item.callingnumber},#{item.oricallednumber},#{item.callednumber},
+		#{item.starttime},#{item.answertime},#{item.keypresstime},#{item.answerendtime},#{item.endtime},#{item.calllength},
+		#{item.callduration},#{item.calltype},#{item.barringtype},#{item.trunkid},#{item.localcode},
+		#{item.destcode},#{item.listtype},#{item.auditresult},#{item.recordpath},#{item.recordstarttime},#{item.recordendtime},#{item.voiceName},#{item.voiceUrl})
+		</foreach>
+	</insert>
+	
+</mapper>

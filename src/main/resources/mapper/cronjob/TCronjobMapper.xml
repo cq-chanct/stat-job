@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cronjob.TCronjobMapper">
+	
+	<sql id="Base_Column_List">
+		ID, NAME, type, strategy, JOB_CLASS, JOB_DATA,
+	    JOB_STATUS, service_type,
+	    date_format(CREATE_TIME,'%Y-%m-%d %h:%i:%s') as CREATE_TIME,
+	    date_format(UPDATE_TIME,'%Y-%m-%d %h:%i:%s') as UPDATE_TIME,
+	    date_format(BEGIN_TIME,'%Y-%m-%d %h:%i:%s') as BEGIN_TIME,
+	    date_format(END_TIME,'%Y-%m-%d %h:%i:%s') as END_TIME,
+	    YL1, YL2, YL3
+	</sql>
+	
+	<select id="selectValidCronjob" parameterType="java.lang.String"
+		resultType="tCronjob">
+		select
+		<include refid="Base_Column_List" />
+		from t_cronjob
+		where (JOB_STATUS = '0' or JOB_STATUS = '1')
+		<if test="_parameter != 'all'">
+			and ${_parameter}
+		</if>
+	</select>
+	
+	<update id="updateByPK" parameterType="tCronjob">
+		update t_cronjob
+		<set>
+			<if test="name != null">
+				NAME = #{name},
+			</if>
+			<if test="serviceType != null">
+				service_type = #{serviceType},
+			</if>
+			<if test="type != null">
+				type = #{type},
+			</if>
+			<if test="strategy != null">
+				strategy = #{strategy},
+			</if>
+			<if test="jobClass != null">
+				JOB_CLASS = #{jobClass},
+			</if>
+			<if test="jobData != null">
+				JOB_DATA = #{jobData},
+			</if>
+			<if test="jobStatus != null">
+				JOB_STATUS = #{jobStatus},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = to_date(#{createTime},'yyyy-mm-dd hh24:mi:ss'),
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = to_date(#{updateTime},'yyyy-mm-dd hh24:mi:ss'),
+			</if>
+			<if test="beginTime != null">
+				BEGIN_TIME = to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss'),
+			</if>
+			<if test="endTime != null">
+				END_TIME = to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss'),
+			</if>
+			<if test="yl1 != null">
+				YL1 = #{yl1},
+			</if>
+			<if test="yl2 != null">
+				YL2 = #{yl2},
+			</if>
+			<if test="yl3 != null">
+				YL3 = #{yl3},
+			</if>
+		</set>
+		where ID = #{id}
+	</update>
+
+</mapper>

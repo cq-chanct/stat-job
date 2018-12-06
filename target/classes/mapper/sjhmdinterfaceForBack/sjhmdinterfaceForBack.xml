@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="interfaceForBlack.sjhmdinterfaceForBack">
+
+    <select id="queryInterFace" parameterType="com.chanct.sjhmdinterfaceForBack.entity.FeedBack"
+            resultType="com.chanct.sjhmdinterfaceForBack.entity.FeedBack">
+        SELECT * from UCMD_TGJ_SJHMD t  WHERE cjsj > sysdate-(1/144)  and t.ZXZT ='0'
+    </select>
+
+    <update id="updateInterFace" parameterType="java.util.Map">
+		UPDATE UCMD_TGJ_SJHMD t set t.ZXZT ='3' where t.HM = #{phone_num}
+    </update>
+
+    <insert id="insertBlackNum" parameterType="java.util.Map">
+        INSERT INTO black_phone_llist (
+          phone_num,
+          issueReason,
+          issueTime,
+          issuePeople,
+          issuePhone,
+          issueDepartment,
+          domain,
+          rulenumber,
+          calltype,
+          operatetype,
+          STATUS,
+          source,
+          firm_flag,
+          interceptTime
+          )
+        VALUES(
+          #{phone_num},#{issueReason},date_format(NOW(),'%Y-%m-%d %H:%i:%s'),#{issuePeople},#{issuePhone},#{issueDepartment},1,103,0,0,1,3,0,#{interceptTime})
+
+    </insert>
+
+    <select id="queryblackone" resultType="com.chanct.sjhmdinterfaceForBack.entity.BlackNum"
+            parameterType="java.util.Map">
+       SELECT phone_num as phonenum,status as status FROM `black_phone_llist` WHERE phone_num=#{phone_num}
+    </select>
+
+    <update id="updateOldBlackNum" parameterType="com.chanct.sjhmdinterfaceForBack.entity.BlackNum">
+    update black_phone_llist t SET t.status=1 WHERE t.phone_num = #{phone_num}
+	</update>
+
+    <insert id="insertSjhmdResult" parameterType="List">
+        insert into UCMD_TGJ_SJHMDRESULT
+        (
+        sjhmd_id, hm, ballyxm, ballydh,ssgajg,qzje,yssje,hmlyid,ajlbdm,zxzt
+        )
+        <foreach collection="list" item="item" index="index" separator="UNION">
+            SELECT
+            #{item.sjhmdId,jdbcType=VARCHAR},
+            #{item.hm,jdbcType=VARCHAR},
+            #{item.ballyxm,jdbcType=VARCHAR},
+            #{item.ballydh,jdbcType=VARCHAR},
+            #{item.ssgajg,jdbcType=VARCHAR},
+            #{item.qzje,jdbcType=VARCHAR},
+            #{item.yssje,jdbcType=VARCHAR},
+            #{item.hmlyid,jdbcType=VARCHAR},
+            #{item.ajlbdm,jdbcType=VARCHAR},
+            3 FROM dual
+        </foreach>
+    </insert>
+</mapper>

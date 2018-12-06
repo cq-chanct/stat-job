@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="evilOracle.InsertThreeOperators">
+
+    <insert id="InsertAbroadPhoneNumber" parameterType="com.chanct.ThreeOperators.entity.AbroadPhoneNumber">
+      INSERT INTO `up_abroad_phone_number` (
+           startTime,
+           endTime,
+           flashsignal,
+           message,
+           number,
+           TYPE
+       ) VALUE (
+           #{startTime},
+           #{endTime},
+           #{flashSignal},
+           #{message},
+           #{number},
+           #{type}
+       )
+  </insert>
+
+    <insert id="InsertIrregularPhone" parameterType="com.chanct.ThreeOperators.entity.IrregularPhone">
+    INSERT INTO `up_Irregular_phones` (
+       startTime,
+       endTime,
+       territory,
+       territoryTop1,
+       territoryTop2,
+       territoryTop3,
+       abroad,
+       number,
+       TYPE
+    ) VALUE (
+      #{startTime},
+      #{endTime},
+       #{territory},
+       #{territoryTop1},
+       #{territoryTop2},
+       #{territoryTop3},
+       #{abroad},
+       #{number},
+      #{type}
+    )
+  </insert>
+
+    <insert id="InsertFraudClass" parameterType="com.chanct.ThreeOperators.entity.FraudClass">
+        INSERT INTO `up_phone_number` (
+          startTime,
+          endTime,
+          welfare_message,
+          garbage_message,
+          fraud_message,
+          highly_suspected_number,
+          dissuade_success,
+          dissuade_failure,
+          public_fraud_number,
+          stop_money,
+          fraud_url_number,
+          enterprise_url,
+          wjz_number,
+          TYPE
+        ) VALUE (
+          #{startTime},
+          #{endTime},
+          #{gwelfareMessage},
+          #{garbageMessage},
+          #{fraudMessage},
+          #{highlySuspectedNumber},
+          #{dissuadeSuccess},
+          #{dissuadeFailure},
+          #{publicFraudNumber},
+          #{stopMoney},
+          #{fraudUrlNumber},
+          #{enterpriseUrl},
+          #{wjzNumber},
+          #{type}
+        )
+    </insert>
+
+
+
+    <insert id="InsertBadcallNumber" parameterType="com.chanct.ThreeOperators.entity.BadcallNumber">
+        INSERT INTO `up_badcall_number` (
+            startTime,
+            endTime,
+            territory,
+            territoryTop1,
+            territoryTop2,
+            territoryTop3,
+            number1,
+            abroad,
+            anomaly,
+            fraud,
+            advertisement,
+            other,
+            number2,
+            TYPE
+        ) VALUE (
+            #{startTime},
+            #{endTime},
+            #{territory},
+            #{territoryTop1},
+            #{territoryTop2},
+            #{territoryTop3},
+            #{number1},
+            #{abroad},
+            #{anomaly},
+            #{fraud},
+            #{advertisement},
+            #{other},
+            #{number2},
+            #{type}
+            )
+    </insert>
+
+
+
+
+    <insert id="Insertenterprise" parameterType="com.chanct.ThreeOperators.entity.EnterpriseManagement">
+        INSERT INTO `up_enterprise_management` (
+        startTime,
+        endTime,
+        training,
+        examination,
+        violation,
+        TYPE
+        ) VALUE (
+        #{startTime},
+        #{endTime},
+        #{training},
+        #{examination},
+        #{violation},
+        #{type}
+        )
+    </insert>
+
+    <insert id="InsertTelecom" parameterType="com.chanct.ThreeOperators.entity.TelecomRectify">
+        INSERT INTO `up_telecom_rectify` (
+            startTime,
+            endTime,
+            voice,
+            rectify_voice,
+            shutDown_voice,
+            rectify_business,
+            shutDown_business,
+            one_connect,
+            business,
+            TYPE
+        ) VALUE (
+            #{startTime},
+            #{endTime},
+            #{voice},
+            #{rectifyVoice},
+            #{shutDownVoice},
+            #{rectify_business},
+            #{shutDown_business},
+            #{one_connect},
+            #{business},
+            #{type}
+            )
+    </insert>
+    <!--  插入数据到黑卡库  -->
+    <insert id="InsertBlackCard" parameterType="com.chanct.ThreeOperators.entity.BlackCardVo">
+        INSERT INTO `s_black_card` (
+        filename,
+        phone_num,
+        source,
+        source_phone,
+        dispose_time,
+        result,
+        close_time,
+        TYPE
+        ) VALUE (
+        #{filename},
+        #{phoneNum},
+        #{source},
+        #{sourcePhone},
+        #{disposeTime},
+        #{result},
+        #{closeTime},
+        #{type}
+        )
+    </insert>
+
+    <!-- 插入黑名单反馈信息  -->
+    <insert id="InsertBlacPhone" parameterType="com.chanct.ThreeOperators.entity.BlackphoneResult">
+            INSERT INTO `up_blackphone_result` (
+        file_name,
+        black_phone,
+        manage_time,
+        manage_result,
+        intercept_time,
+        time_limit,
+        TYPE
+        ) VALUE (
+        #{fileName},
+        #{blackPhone},
+        #{manageTime},
+        #{manageResult},
+        #{interceptTime},
+        #{timeLimit},
+        #{type}
+        )
+    </insert>
+</mapper>

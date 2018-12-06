@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="insertEvil.insertEvilOracleMapper">
+
+  <!--  <select id="getEvilByTime" resultType="com.chanct.insertEvilOracle.entity.EvilInfo">
+		SELECT
+  id,
+  user_city AS userCity,
+  evil_number AS evilNumber,
+  cheated_user AS cheatedUser,
+  answerTime AS answerTime,
+  callDuration AS callDuration,
+  cheated_type AS cheatedType,
+  evil_city AS evilCity
+FROM
+  evil_detail_kaitong_info
+WHERE engine_time >
+  (SELECT
+    SUBDATE(NOW(), INTERVAL 70 MINUTE))
+  AND evilType = 2
+UNION
+SELECT
+  id,
+  user_city AS userCity,
+  evil_number AS evilNumber,
+  cheated_user AS cheatedUser,
+  answerTime AS answerTime,
+  callDuration AS callDuration,
+  cheated_type AS cheatedType,
+  evil_city AS evilCity
+FROM
+  evil_detail_info
+WHERE engine_time >
+  (SELECT
+    SUBDATE(NOW(), INTERVAL 70 MINUTE))
+  AND cdr_source = 136 AND evilType = 2
+UNION
+
+SELECT
+  *
+FROM
+  (SELECT
+    e.id,
+    c.phone_city AS userCity,
+    e.c_relatenum AS evilNumber,
+    e.c_usernum AS cheatedUser,
+    FROM_UNIXTIME(e.c_timestamp - e.c_calltime) AS answerTime,
+    e.c_calltime AS callDuration,
+    '仿冒公检法' AS cheatedType,
+    e.c_homecode AS evilCity
+  FROM
+    `evil_detail_gjf_info` e
+    LEFT JOIN `common_telphone_area` c
+      ON e.c_homecode = c.phone_num
+  WHERE e.c_homecode != 'NULL'
+    AND e.c_cdrtype IN (5, 6)
+    AND TIME >
+    (SELECT
+      SUBDATE(NOW(), INTERVAL 60 MINUTE))) b
+GROUP BY b.evilNumber
+UNION
+SELECT
+  id,
+  user_city AS userCity,
+  evil_number AS evilNumber,
+  cheated_user AS cheatedUser,
+  startTalkTime AS answerTime,
+  callDuration AS callDuration,
+  NULL
+ AS cheatedType,
+  evil_city AS evilCity
+FROM
+  evil_detail_xd_info
+WHERE  TIME >
+  (SELECT
+    SUBDATE(NOW(), INTERVAL 60 MINUTE))  AND user_city IS NOT NULL AND user_city !=''  AND callDuration !=0
+	</select>-->
+    <select id="getEvilByTime" resultType="com.chanct.insertEvilOracle.entity.EvilInfo">
+       SELECT
+        id,
+        user_city AS userCity,
+        evil_number AS evilNumber,
+        cheated_user AS cheatedUser,
+        answerTime AS answerTime,
+        callDuration AS callDuration,
+        cheated_type AS cheatedType,
+        evil_city AS evilCity
+        FROM
+        evil_detail_info
+        WHERE engine_time >
+        (SELECT
+        SUBDATE(NOW(), INTERVAL 70 MINUTE))
+         AND (evilType = 2  OR (evilType =1 AND callDuration > 1800))
+    </select>
+
+    <update id="updateBlackStateById" parameterType="java.lang.String">
+		UPDATE evil_detail_info
+		SET
+		other1 = '1'
+		where  id IN
+		<foreach item="id" collection="list" open="(" separator=","
+							close=")">
+		#{id}
+	</foreach>
+		</update>
+    <update id="updateBlackStateKTById" parameterType="java.lang.String">
+         UPDATE evil_detail_kaitong_info
+          SET
+         state = 1
+		where id in
+		<foreach item="id" collection="list" open="(" separator=","
+				 close=")">
+			#{id}
+		</foreach>
+</update>
+	<select id="getLowEvilByTime" resultType="com.chanct.insertEvilOracle.entity.EvilInfo">
+		SELECT id,user_city as userCity,evil_number as evilNumber,cheated_user as cheatedUser,answerTime as answerTime,callDuration as callDuration,cheated_type as cheatedType,evil_city as evilCity FROM evil_detail_info  WHERE engine_time>(SELECT SUBDATE(NOW() ,INTERVAL 70 MINUTE )) and evilType=1
+	</select>
+
+<!-- union
+           SELECT * FROM (
+  SELECT
+    e.id,
+    c.phone_city AS userCity,
+    e.c_relatenum AS evilNumber,
+    e.c_usernum AS cheatedUser,
+    FROM_UNIXTIME(e.c_timestamp - e.c_calltime) AS answerTime,
+    e.c_calltime AS callDuration,
+    '仿冒公检法' AS cheatedType,
+    e.c_homecode AS evilCity
+  FROM
+    `evil_detail_gjf_info` e
+    LEFT JOIN `common_telphone_area` c
+      ON e.c_relatenum_homecode = c.phone_num
+  WHERE c.phone_prov = '浙江'
+    AND e.c_homecode != 'NULL'
+    AND e.c_cdrtype IN(3,4)
+    AND TIME > (SELECT SUBDATE(NOW() ,INTERVAL 60 MINUTE ))
+  ) b
+  GROUP BY b.evilNumber-->
+
+</mapper>

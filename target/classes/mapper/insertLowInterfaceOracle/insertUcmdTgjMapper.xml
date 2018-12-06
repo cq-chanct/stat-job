@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="evilOracle.insertUcmdTgjMapper">
+	
+	<insert id="insertUcmdTgj" parameterType="List">
+		insert into UCMD_TGJ_INTERFACE
+		(
+		id,cityname,callingnumber,callednumber,starttalktime,talktime,createtime,type,called_city_name
+		) 
+		<foreach collection="list" item="item" index="index" separator="UNION">
+		SELECT
+		sys_guid(),
+		#{item.cityname,jdbcType=VARCHAR},
+		#{item.callingnumber,jdbcType=VARCHAR},
+		#{item.callednumber,jdbcType=VARCHAR},
+		to_date(#{item.starttalktime},'YYYY-MM-DD HH24:MI:SS'),
+		#{item.talktime,jdbcType=VARCHAR},
+		sysdate,
+		4,
+		#{item.called_city_name,jdbcType=VARCHAR} FROM dual 
+		</foreach>
+	</insert>
+	<insert id="insertLowUcmdTgj" parameterType="List">
+		insert into UCMD_TGJ_LOW_INTERFACE
+		(
+		id,cityname,callingnumber,callednumber,starttalktime,talktime,createtime,type,called_city_name
+		)
+		<foreach collection="list" item="item" index="index" separator="UNION">
+			SELECT
+			sys_guid(),
+			#{item.cityname,jdbcType=VARCHAR},
+			#{item.callingnumber,jdbcType=VARCHAR},
+			#{item.callednumber,jdbcType=VARCHAR},
+			to_date(#{item.starttalktime},'YYYY-MM-DD HH24:MI:SS'),
+			#{item.talktime,jdbcType=VARCHAR},
+			sysdate,
+			4,
+			#{item.called_city_name,jdbcType=VARCHAR} FROM dual
+		</foreach>
+	</insert>
+</mapper>

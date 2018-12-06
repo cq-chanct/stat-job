@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="config.properties"></properties>
+	<settings>
+		<setting name="cacheEnabled" value="false" /><!-- 这个配置使全局的映射器启用或禁用 缓存 -->
+		<setting name="mapUnderscoreToCamelCase" value="true" /><!-- 字段与实体类的下划线转换 -->
+		<setting name="lazyLoadingEnabled" value="true" /><!-- 全局启用或禁用延迟加载。当禁用时, 所有关联对象都会即时加载。 -->
+		<setting name="aggressiveLazyLoading" value="false" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="useColumnLabel" value="true" /><!-- 使用列标签代替列名 -->
+		<setting name="localCacheScope" value="STATEMENT" /><!--控制缓存级别 -->
+	</settings>
+	<typeAliases>
+		<typeAlias type="com.chanct.core.db.DBCPDataSourceFactory" alias="RHEA_DBCP" />
+		<typeAlias alias="tCronjob" type="com.chanct.netsecur.cronjob.vo.TCronjob" />
+	</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="RHEA_DBCP">
+				<property name="driverclassname" value="${dsCradar1.jdbc.driverName}" />
+				<property name="url" value="${dsCradar1.jdbc.url}" />
+				<property name="username" value="${dsCradar1.jdbc.username}" />
+				<property name="password" value="${dsCradar1.jdbc.password}" />
+				<property name="initialSize" value="${jdbc.initialSize}" />
+				<property name="maxActive" value="${jdbc.maxActive}" />
+				<property name="maxIdle" value="${jdbc.maxIdle}" />
+				<property name="maxWait" value="${jdbc.maxWait}" />
+				<property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}" />
+				<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+				<property name="removeAbandoned" value="${jdbc.removeAbandoned}" />
+				<property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="mapper/cronjob/TCronjobMapper.xml" />
+		<mapper resource="mapper/tjStatJob/tjDayJobMapper.xml" />
+		<mapper resource="mapper/tjStatJob/tjHourJobMapper.xml" />
+		<mapper resource="mapper/countCdr/cdrCountMapper.xml" />
+		<mapper resource="mapper/countCdr/cdrTotalMapper.xml" />
+		<mapper resource="mapper/fraudcdr/fraudCdrMapper.xml" />
+		<mapper resource="mapper/insertEvilOracle/insertEvilOracleMapper.xml" />
+		<mapper resource="mapper/insertEvilOracle/insertUcmdTgjMapper.xml" />
+		<mapper resource="mapper/sjhmdinterfaceForBack/sjhmdinterfaceForBack.xml" />
+		<mapper resource="mapper/insertFraudOracle/insertFraudOracleMapper.xml" />
+		<mapper resource="mapper/insertFraudOracle/insertFraudUcmdTgjMapper.xml" />
+		<mapper resource="mapper/insertVoipOracle/insertVoipOracleMapper.xml" />
+		<mapper resource="mapper/insertVoipOracle/insertVoipUcmdTgjMapper.xml" />
+		<mapper resource="mapper/xdInsertOracle/xdInsertOracleMapper.xml" />
+		<mapper resource="mapper/interfaceProcess/interfaceProcess.xml" />
+		<mapper resource="mapper/insertLowInterfaceOracle/insertLowInterfaceOracleMapper.xml" />
+		<mapper resource="mapper/insertRejectPhone/insertRejectPhoneMapper.xml" />
+		<mapper resource="mapper/ThreeOperators/ThreeOperatorsMapper.xml" />
+		<mapper resource="mapper/maliceUrl/maliceUrlMapper.xml" />
+		<!-- 资源探测接口 -->
+	</mappers>
+</configuration>

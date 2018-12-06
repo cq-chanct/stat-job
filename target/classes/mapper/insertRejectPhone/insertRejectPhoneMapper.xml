@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="insertRejectPhone.insertRejectPhoneMapper">
+
+    <select id="getRejectPhone" resultType="com.chanct.insertRejectPhone.entity.RejectBlackPhone">
+		SELECT
+  callingnumber,
+  interceptTime,
+  issueReason,
+  issuePeople,
+  issuePhone,
+  issueDepartment,
+  receiveTime,
+  rejectReason
+FROM
+  `reject_black_phone`
+WHERE createTime >
+  (SELECT
+    SUBDATE(NOW(), INTERVAL 60 MINUTE))
+	</select>
+    <insert id="insertRejectPhone" parameterType="List">
+        insert into UCMD_TGJ_SJHMDREREJECT
+        (
+        CALLINGNUMBER,INTERCEPTTIME,ISSUEREASON,ISSUEPEOPLE,ISSUEPHONE,ISSUEDEPARTMENT,RECEIVETIME,REJECTREASON
+        )
+        <foreach collection="list" item="item" index="index" separator="UNION">
+            SELECT
+            #{item.callingnumber,jdbcType=VARCHAR},
+            #{item.interceptTime,jdbcType=VARCHAR},
+            #{item.issueReason,jdbcType=VARCHAR},
+            #{item.issuePeople,jdbcType=VARCHAR},
+            #{item.issuePhone,jdbcType=VARCHAR},
+            #{item.issueDepartment,jdbcType=VARCHAR},
+            #{item.receiveTime,jdbcType=VARCHAR},
+            #{item.rejectReason,jdbcType=VARCHAR} FROM dual
+        </foreach>
+    </insert>
+
+
+</mapper>

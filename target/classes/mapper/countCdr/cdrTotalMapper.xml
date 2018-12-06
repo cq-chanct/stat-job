@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="count.cdrTotalMapper">
+     <select id="getCountTimesToday" resultType="long"
+	parameterType="java.util.Map">
+		SELECT count(*) as count FROM  ${tableName} 
+	 </select>
+     <select id="getCdrCountIsSave" resultType="long"
+	parameterType="com.chanct.cdrCountTotal.vo.CdrDayCountVo">
+		SELECT count(*) FROM s_call_cdr_dcnt where stat_date=#{statDate} and machine_num=#{machineNum}
+	 </select>
+	<insert id="insertCdrCountToday"  parameterType="com.chanct.cdrCountTotal.vo.CdrDayCountVo">
+		insert into s_call_cdr_dcnt (stat_date,cdr_count,machine_num) values(#{statDate}, #{cdrCount}, #{machineNum})
+	</insert>
+	<insert id="insertCdrCount"  parameterType="java.util.Map">
+		insert into CallRecord_20161204 (name) values(1)
+	</insert>
+	<update id="updateCdrCountToday"  parameterType="com.chanct.cdrCountTotal.vo.CdrDayCountVo">
+		update s_call_cdr_dcnt set cdr_count=#{cdrCount} where stat_date=#{statDate} and machine_num=#{machineNum}
+	</update>
+</mapper>

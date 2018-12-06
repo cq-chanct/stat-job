@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="insertEvil.insertFraudOracleMapper">
+	
+	<select id="getEvilByTime" resultType="com.chanct.insertFraudOracle.entity.FraudEvilInfo">
+		SELECT callingnumber as callingnumber,callednumber as callednumber,starttime as starttime,answertime as answertime,answerendtime as answerendtime, endtime as endtime,callduration as callduration FROM s_voice_fraudcdr_detail  WHERE DATE_FORMAT(createtime,'%Y-%m-%d %H:%i:%s')>(SELECT SUBDATE(NOW() ,INTERVAL 1 hour))
+	</select>
+</mapper>

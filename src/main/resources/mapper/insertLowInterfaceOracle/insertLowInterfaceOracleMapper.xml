@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="insertLowInterface.insertLowInterfaceOracleMapper">
+
+    <select id="getEvilByTime" resultType="com.chanct.insertEvilOracle.entity.EvilInfo">
+		SELECT
+  id,
+  user_city AS userCity,
+  evil_number AS evilNumber,
+  cheated_user AS cheatedUser,
+  answerTime AS answerTime,
+  callDuration AS callDuration,
+  cheated_type AS cheatedType,
+  evil_city AS evilCity
+FROM
+  evil_detail_kaitong_info
+WHERE engine_time >
+  (SELECT
+    SUBDATE(NOW(), INTERVAL 70 MINUTE))
+  UNION
+  SELECT
+    id,
+    user_city AS userCity,
+    evil_number AS evilNumber,
+    cheated_user AS cheatedUser,
+    answerTime AS answerTime,
+    callDuration AS callDuration,
+    cheated_type AS cheatedType,
+    evil_city AS evilCity
+  FROM
+    evil_detail_info
+  WHERE engine_time >
+    (SELECT
+      SUBDATE(NOW(), INTERVAL 70 MINUTE))
+  UNION
+  SELECT
+  id,
+    cityname AS userCity,
+    callingnumber AS evilNumber,
+    callednumber AS cheatedUser,
+    starttalktime AS answerTime,
+    talktime AS callDuration ,
+    NULL AS cheatedType,
+    NULL AS  evilCity
+  FROM
+    `cdr_excel_xd_info`
+  WHERE createtime >
+    (SELECT
+      SUBDATE(NOW(), INTERVAL 60 MINUTE))
+	</select>
+	<insert id="insertLowUcmdTgj" parameterType="List">
+		insert into UCMD_TGJ_LOW_INTERFACE
+		(
+		id,cityname,callingnumber,callednumber,starttalktime,talktime,createtime,type,called_city_name
+		)
+		<foreach collection="list" item="item" index="index" separator="UNION">
+			SELECT
+			sys_guid(),
+			#{item.cityname,jdbcType=VARCHAR},
+			#{item.callingnumber,jdbcType=VARCHAR},
+			#{item.callednumber,jdbcType=VARCHAR},
+			to_date(#{item.starttalktime},'YYYY-MM-DD HH24:MI:SS'),
+			#{item.talktime,jdbcType=VARCHAR},
+			sysdate,
+			4,
+			#{item.called_city_name,jdbcType=VARCHAR} FROM dual
+		</foreach>
+	</insert>
+
+
+
+
+</mapper>
